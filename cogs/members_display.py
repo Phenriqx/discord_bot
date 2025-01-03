@@ -10,7 +10,7 @@ class MembersList(commands.Cog):
     async def on_ready(self):
         print('members_list.py is ready')
         
-    @commands.command('members')
+    @commands.command('members', help='Displays a list of all members on the server!')
     async def get_members(self, ctx):
         guild = ctx.guild
         members = '\n - '.join([member.name for member in guild.members])

@@ -10,7 +10,9 @@ class DeleteChannel(commands.Cog):
     async def on_ready(self):
         print('delete_channel.py is ready')
         
-    @commands.command('delete-channel')
+    @commands.command('delete-channel', help="""
+                      Use the command "delete-channel" to delete any channel on the server, whether it is voice or chat.
+                      PS: Must have admin role""")
     @commands.has_role('admin')
     async def delete_channel(self, ctx, channel_name):
         guild = ctx.guild
