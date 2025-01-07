@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-import random
+import json
 
 
 class RolesAutomation(commands.Cog):
@@ -11,21 +11,37 @@ class RolesAutomation(commands.Cog):
     async def on_ready(self):
         print('automation_roles.py is ready')
         
-    # Command that displays all the roles on the server    
-    @commands.command('fetch-roles')
-    async def fetch_roles(self, ctx):
-        guild = ctx.guild
-        roles = [role.name for role in guild.roles]
-        print(roles)
-        await ctx.send(f'List of all the roles in the server: {roles}')
+        
+    @commands.Cog.listener()
+    async def on_member_join(self, member):
+        with open('cogs/json/autorole.json', 'r') as f:
+            auto_role = json.load(f)
+        
+        join_role = discord.utils.get(member.guild.roles, name=auto_role[str(member.guild.id)])
+        await member.add_roles(join_role)
+        
+
+    @commands.command()
+    @commands.has_permissions(administrator=True)
+    async def joinrole(self, ctx, role: discord.Role):
+        with open('cogs/json/autorole.json', 'r') as f:
+            auto_role = json.load(f)
+            
+        auto_role[str(ctx.guild.id)] = str(role.name)
+        
+        with open('cogs/json/autorole.json', 'w') as f:
+            json.dump(auto_role, f, indent=4)
+            
+        conf_embed = discord.Embed(color=discord.Color.green())
+        conf_embed.add_field(name='Success!', value=f'The automatic role for this server has been set to {role.mention}')
+        conf_embed.set_footer(text=f'Action taken by {ctx.author.name}.')
+        
+        await ctx.send(embed = conf_embed)
             
             
     # Command that checks the roles assigned to a given player on the server 
     @commands.command('check-roles')
     async def check_roles(self, ctx, *, member: discord.Member):
-        # if member not in ctx.guild.members:
-        #     await ctx.send('This player is currently not in the server.')
-        
         roles = [role.name for role in member.roles]
             
         if len(roles) == 1:
@@ -36,7 +52,6 @@ class RolesAutomation(commands.Cog):
   
     # Creates a role with a given name    
     @commands.command('create-role')
-    @commands.has_role('admin')
     @commands.has_permissions(manage_roles=True)
     async def create_role(self, ctx, *, role: str):
         guild = ctx.guild
@@ -48,18 +63,32 @@ class RolesAutomation(commands.Cog):
         
     # Deletes a given role   
     @commands.command('delete-role')
-    @commands.has_role('admin')
     @commands.has_permissions(manage_roles=True)
     async def delete_role(self, ctx, *, role: discord.Role):
         role = discord.utils.get(ctx.message.guild.roles, name=f"{role}")
         await role.delete()
         await ctx.send(f"[{role}] Has been deleted!")
         
-        
+    
+    # Add a given role to a specified player
     @commands.command('add-role')
-    @commands.has_role('admin')
-    async def add_role(self, ctx, role: discord.Role, member: discord.Member):
-        pass 
+    @commands.has_permissions(manage_roles=True)
+    async def add_role(self, ctx, role_name: str, member: discord.Member, *, reason: str):
+        role = discord.utils.get(ctx.message.guild.roles, name=f"{role_name}")
+        if not role:
+            await ctx.send('This role does not exist!')
+        else:
+            await member.add_roles(role_name)
+            await ctx.send(f"""The role [{role_name}] has been assigned to {member.name.capitalize()}!\n
+                       Reason: {reason}.""") 
+        
+        
+    # Remove a given role from a specified player    
+    @commands.command('remove-role')
+    @commands.has_permissions(manage_roles=True)
+    async def remove_role(self, ctx, role: discord.Role, member: discord.Member):
+        await member.remove_roles(role)
+        await ctx.send(f'The role [{role}] has been taken away from {member.name}!')
     
         
 async def setup(client):

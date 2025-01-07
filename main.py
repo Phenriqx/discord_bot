@@ -4,6 +4,8 @@ import discord
 import asyncio
 from dotenv import load_dotenv
 from discord.ext import commands, tasks
+import json
+
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -46,15 +48,27 @@ async def main():
         await bot.start(TOKEN)
         
 
-# Welcomes new members to the server
 @bot.event
-async def on_member_join(member, ctx):
-    await member.create_dm()
-    await member.dm_channel_send(
-        f'Welcome {member.name}'
-    )
-    await member.channel.send(f'Hello, {member.name}. Welcome to the server')        
+async def on_guild_join(guild):
+    with open('cogs/json/autorole.json', 'r') as f:
+        auto_role = json.load(f)
+        
+    auto_role[str[guild.id]] = None
     
+    with open('cogs/json/autorole.json', 'w') as f:
+        json.dump(auto_role, f, indent=4)
+
+    
+@bot.event
+async def on_guild_remove(guild):
+    with open('cogs/json/autorole.json', 'r') as f:
+        auto_role = json.load(f)
+        
+    auto_role.pop(str(guild.id))
+    
+    with open('cogs/json/autorole.json', 'w') as f:
+        json.dump(auto_role, f, indent=4)
+            
 
 # Events that handle certain errors
 @bot.event
