@@ -21,7 +21,7 @@ class DeleteChannel(commands.Cog):
             await existing_channel.delete()
             await ctx.send(f'Channel {channel_name} deleted!')
         else:
-            await ctx.send(f'No channel named {channel_name} was found!')
+            await ctx.send(f'No   named {channel_name} was found!')
             
 
 async def setup(client):
