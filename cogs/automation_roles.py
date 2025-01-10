@@ -56,7 +56,7 @@ class RolesAutomation(commands.Cog):
     async def create_role(self, ctx, *, role: str):
         guild = ctx.guild
         await guild.create_role(name=role, 
-                                color=discord.Color(0xd9e906),
+                                color=discord.Color.random(),
                                 mentionable=True)
         await ctx.send(f'The role "{role}" was created by {ctx.message.author}.')
         

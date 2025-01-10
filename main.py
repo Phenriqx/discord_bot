@@ -2,6 +2,7 @@ import os
 import sys
 import discord
 import asyncio
+import discord.embeds
 from dotenv import load_dotenv
 from discord.ext import commands, tasks
 import json
@@ -34,6 +35,25 @@ async def on_ready():
         f'{guild.name}(id: {guild.id})'
     )
     change_status.start()
+    
+
+@bot.event
+async def on_member_join(member):
+    welcome_channel = discord.utils.get(member.guild.channels, name='welcome')
+    
+    welcome_embed = discord.Embed(title='Arrival logged', description='Welcome to the server!', color=discord.Color.green())
+    
+    welcome_embed.add_field(name='User:', value=f'{member.mention}', inline=False)
+    await welcome_channel.send(embed = welcome_embed)
+    
+@bot.event
+async def on_member_remove(member):
+    welcome_channel = discord.utils.get(member.guild.channels, name='welcome')
+    
+    welcome_embed = discord.Embed(title='Departure logged', description='This user left the server!', color=discord.Color.red())
+    
+    welcome_embed.add_field(name='User:', value=f'{member.mention}', inline=False)
+    await welcome_channel.send(embed = welcome_embed)
 
     
 # Load cogs folder with the command files
@@ -51,13 +71,12 @@ async def main():
 @bot.event
 async def on_guild_join(guild):
     with open('cogs/json/autorole.json', 'r') as f:
-        auto_role = json.load(f)
-        
+        auto_role = json.load(f)  
     auto_role[str[guild.id]] = None
     
     with open('cogs/json/autorole.json', 'w') as f:
         json.dump(auto_role, f, indent=4)
-
+        
     
 @bot.event
 async def on_guild_remove(guild):
@@ -68,7 +87,7 @@ async def on_guild_remove(guild):
     
     with open('cogs/json/autorole.json', 'w') as f:
         json.dump(auto_role, f, indent=4)
-            
+
 
 # Events that handle certain errors
 @bot.event
