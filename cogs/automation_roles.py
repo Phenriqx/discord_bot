@@ -73,14 +73,13 @@ class RolesAutomation(commands.Cog):
     # Add a given role to a specified player
     @commands.command('add-role')
     @commands.has_permissions(manage_roles=True)
-    async def add_role(self, ctx, role_name: str, member: discord.Member, *, reason: str):
-        role = discord.utils.get(ctx.message.guild.roles, name=f"{role_name}")
+    async def add_role(self, ctx, role_name: discord.Role, member: discord.Member):
+        role = discord.utils.get(ctx.guild.roles, name=f"{role_name}")
         if not role:
             await ctx.send('This role does not exist!')
         else:
             await member.add_roles(role_name)
-            await ctx.send(f"""The role [{role_name}] has been assigned to {member.name.capitalize()}!\n
-                       Reason: {reason}.""") 
+            await ctx.send(f"""The role [{role_name}] has been assigned to {member.name.capitalize()}!\n""") 
         
         
     # Remove a given role from a specified player    

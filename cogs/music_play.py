@@ -39,6 +39,16 @@ class Music(commands.Cog):
             print(e)
             
         try:
+            if self.youtube_base_url not in link:
+                query_str = urllib.parse.urlencode({
+                    'search_query': link,
+                })
+                
+                content = urllib.request.urlopen(self.youtube_results_url + query_str)
+                search_result = re.findall(r'/watch\?v=(.{11})', content.read().decode())
+                
+                link = self.youtube_watch_url + search_result[0]
+                
             loop = asyncio.get_event_loop()
             data = await loop.run_in_executor(None, lambda: self.ytdl.extract_info(link, download=False))       
             
