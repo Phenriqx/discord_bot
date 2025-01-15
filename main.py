@@ -6,6 +6,7 @@ import discord.embeds
 from dotenv import load_dotenv
 from discord.ext import commands, tasks
 import json
+import yt_dlp
 
 
 intents = discord.Intents.default()
@@ -66,7 +67,7 @@ async def main():
     async with bot:
         await load()
         await bot.start(TOKEN)
-        
+
 
 @bot.event
 async def on_guild_join(guild):

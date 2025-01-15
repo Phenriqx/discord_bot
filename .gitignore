@@ -3,6 +3,7 @@
 
 ### dotenv ###
 .env
+bin
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
