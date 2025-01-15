@@ -12,20 +12,20 @@ class ChannelControl(commands.Cog):
         
     
     # Created a text channel
-    @commands.command('create-text-channel')
-    @commands.has_role('admin')
-    async def create_text_channel(self, ctx, channel_name):
-        guild = ctx.guild
+    @commands.command(name='create-text-channel')
+    @commands.has_permissions(administrator=True)
+    async def create_txt_channel(self, ctx, channel_name):
+        guild = ctx.message.guild
         existing_channel = discord.utils.get(guild.channels, name=channel_name)
         
         if not existing_channel and channel_name != None:
             await guild.create_text_channel(channel_name)
-            await ctx.send(f'Text channel created as {channel_name} by {ctx.author}')
+            await ctx.send(f'Channel [{channel_name}] created!')
                         
 
     # Creates a voice channel
-    @commands.command('create-voice-channel')
-    @commands.has_role('admin')
+    @commands.command(name='create-voice-channel')
+    @commands.has_permissions(administrator=True)
     async def create_voice_channel(self, ctx, channel_name):
         guild = ctx.guild
         existing_channel = discord.utils.get(guild.channels, name=channel_name)
